@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchange Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --festive-red: #4dfbff;
+            --festive-gold: #fbbf24;
+            --festive-orange: #f59e0b;
+            --bg-gradient: linear-gradient(135deg, #ffedd5 0%, #ffedd5 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-main: #4dff83;
+ 
+      --text-main2: #000;
+            
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .dashboard {
+            width: 90%;
+            max-width: 420px;
+            background: var(--card-bg);
+            border-radius: 35px;
+            padding: 35px;
+            box-shadow: 0 25px 50px -12px rgba(251, 191, 36, 0.3);
+            border: 5px solid var(--festive-gold);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Pattern */
+        .dashboard::before {
+            content: "✿";
+            position: absolute;
+            top: -10px;
+            right: -5px;
+            font-size: 80px;
+            color: rgba(25, 158, 11, 0.1);
+        }
+
+        .header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, var(--festive-red), var(--festive-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #924e;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 5px 0 0 0;
+        }
+
+        .input-card {
+            background: #ffffff;
+            border: 2px solid #fed7aa;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* BRIGHT SHINING BORDER */
+        .input-card:focus-within {
+            border-color: var(--festive-orange);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+            transform: scale(1.02);
+        }
+
+        .label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #999912;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .field {
+            display: flex;
+            align-items: center;
+        }
+
+        input, select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 22px;
+            font-weight: 800;
+            outline: none;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+        }
+
+        /* Result Section - Rakhi Theme */
+        .result-box {
+            margin-top: 30px;
+            background: linear-gradient(135deg, var(--festive-red) 0%, #7f1d1d 100%);
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            border: 3px solid var(--festive-gold);
+            box-shadow: 0 10px 20px ;
+        }
+
+        .total-label {
+            color: var(--festive-gold);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .final-amount {
+            font-size: 38px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .unit {
+            font-size: 16px;
+            color: var(--festive-gold);
+            margin-left: 8px;
+        }
+
+        select {
+            cursor: pointer;
+            color: var(--festive-red);
+        }
+    </style>
+</head>
+<body onclick="saveAndCalc()">
+
+<div class="dashboard" onclick="event.stopPropagation()">
+    <div class="header">
+        <h1>Exchange Calculator</h1>
+        <p>$ ₹</p>
+    </div>
+
+    <div class="input-card">
+        <span class="label">Live Rate (₹/$)</span>
+        <div class="field">
+            <span style="color: var(--festive-red); margin-right: 12px; font-weight: 800;">₹</span>
+            <input type="number" id="rate" value="94.05" step="0.01" oninput="saveAndCalc()">
+        </div>
+    </div>
+
+    <div class="grid-layout">
+        <div class="input-card">
+            <span class="label">UPI Amount</span>
+            <div class="field">
+                <input type="number" id="upi" placeholder="0.00" oninput="saveAndCalc()">
+            </div>
+        </div>
+
+        <div class="input-card">
+            <span class="label">Op</span>
+            <select id="operator" onchange="saveAndCalc()">
+                <option value="+">+</option>
+                <option value="-">−</option>
+                <option value="*">×</option>
+                <option value="/">÷</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="input-card">
+        <span class="label">Binomo Investment</span>
+        <div class="field">
+            <span style="color: #15803d; margin-right: 12px; font-weight: 800;">$</span>
+            <input type="number" id="binomo" placeholder="0.00" oninput="saveAndCalc()">
+        </div>
+    </div>
+
+    <div class="result-box">
+        <span class="total-label">SHUBH TOTAL SETTLEMENT</span>
+        <div class="final-amount" id="result">0.00<span class="unit">INR</span></div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const saved = localStorage.getItem('rakhiCalcData');
+        if(saved) {
+            const d = JSON.parse(saved);
+            document.getElementById('rate').value = d.r || 94.05;
+            document.getElementById('upi').value = d.u || '';
+            document.getElementById('binomo').value = d.b || '';
+            document.getElementById('operator').value = d.o || '+';
+            calculate();
+        }
+    };
+
+    function saveAndCalc() {
+        calculate();
+        const data = {
+            r: document.getElementById('rate').value,
+            u: document.getElementById('upi').value,
+            b: document.getElementById('binomo').value,
+            o: document.getElementById('operator').value
+        };
+        localStorage.setItem('rakhiCalcData', JSON.stringify(data));
+    }
+
+    function calculate() {
+        const r = parseFloat(document.getElementById('rate').value) || 0;
+        const u = parseFloat(document.getElementById('upi').value) || 0;
+        const b = parseFloat(document.getElementById('binomo').value) || 0;
+        const op = document.getElementById('operator').value;
+
+        const binomoINR = b * r;
+        let total = 0;
+
+        if (op === '+') total = u + binomoINR;
+        else if (op === '-') total = u - binomoINR;
+        else if (op === '*') total = u * binomoINR;
+        else if (op === '/') total = binomoINR !== 0 ? u / binomoINR : 0;
+
+        document.getElementById('result').innerHTML = 
+            total.toLocaleString('en-IN', { maximumFractionDigits: 2 }) + 
+            '<span class="unit">INR</span>';
+    }
+</script>
+
+</body>
+</html>
