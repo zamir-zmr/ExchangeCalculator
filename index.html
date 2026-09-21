@@ -301,11 +301,18 @@
 <script>
     window.onload = function() {
         const savedData = JSON.parse(localStorage.getItem('lifetimeInputs'));
+        const history = JSON.parse(localStorage.getItem('goldHistory') || '[]');
+
         if (savedData) {
             document.getElementById('rate').value = savedData.r;
             document.getElementById('upi').value = savedData.u;
             document.getElementById('binomo_now').value = savedData.n;
-            document.getElementById('binomo_before').value = savedData.b;
+            
+            if (history.length > 0) {
+                document.getElementById('binomo_before').value = history[0].now;
+            } else {
+                document.getElementById('binomo_before').value = savedData.b;
+            }
             calculate();
         }
     };
@@ -333,13 +340,19 @@
     }
 
     function saveData() {
-        const b = parseFloat(document.getElementById('binomo_before').value) || 0;
+        let history = JSON.parse(localStorage.getItem('goldHistory') || '[]');
+        
+        let b;
+        if (history.length > 0) {
+            b = parseFloat(history[0].now);
+        } else {
+            b = parseFloat(document.getElementById('binomo_before').value) || 0;
+        }
+
         const n = parseFloat(document.getElementById('binomo_now').value) || 0;
         const profit = (n - b).toFixed(2);
 
-        let history = JSON.parse(localStorage.getItem('goldHistory') || '[]');
-
-        if (history.length > 0 && history[0].now === n && history[0].before === b) {
+        if (history.length > 0 && history[0].now === n.toFixed(2) && history[0].before === b.toFixed(2)) {
             showToast("Already Saved! ⚠️", "#e67e22");
             return;
         }
@@ -350,7 +363,12 @@
             before: b.toFixed(2),
             profit: profit 
         });
+        
         localStorage.setItem('goldHistory', JSON.stringify(history));
+        
+        document.getElementById('binomo_before').value = n.toFixed(2);
+        calculate();
+
         showToast("Record Saved! ✅", "#2d3436");
         renderHistory();
     }
