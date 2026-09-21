@@ -137,7 +137,7 @@
         #historyPage.active { left: 0; }
 
         .hist-header {
-            padding: 12px 15px;
+            padding: 10px 15px;
             display: flex;
             align-items: center;
             gap: 15px;
@@ -146,7 +146,7 @@
         }
 
         .batch-actions {
-            padding: 8px 15px;
+            padding: 6px 12px;
             background: var(--bg-cream);
             display: flex;
             justify-content: space-between;
@@ -154,71 +154,78 @@
             border-bottom: 1px solid #eee;
         }
 
-        .hist-list { flex: 1; padding: 10px; overflow-y: auto; }
+        .total-benefit-badge {
+            font-size: 11px;
+            font-weight: 800;
+            color: #10b981;
+            background: #e6f4ea;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid #a8e6cf;
+        }
+
+        .hist-list { flex: 1; padding: 6px; overflow-y: auto; }
         
-        /* SUPER COMPRESSED HISTORY CARD */
+        /* EXTRA COMPACT HISTORY CARD */
         .hist-item {
             background: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-left: 4px solid var(--gold-main);
-            border-radius: 10px;
-            padding: 6px 10px;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid var(--gold-main);
+            border-radius: 6px;
+            padding: 3px 6px;
+            margin-bottom: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px;
         }
 
         .hist-top-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .row-check { width: 16px; height: 16px; accent-color: var(--gold-main); cursor: pointer; margin: 0; }
+        .row-check { width: 14px; height: 14px; accent-color: var(--gold-main); cursor: pointer; margin: 0; }
 
         .hist-time {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
-            color: #888;
-            letter-spacing: 0.2px;
+            color: #718096;
+            letter-spacing: 0.1px;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            background: #f4f6f8;
-            padding: 4px;
-            border-radius: 6px;
+            gap: 3px;
+            background: #f7fafc;
+            padding: 2px;
+            border-radius: 4px;
         }
 
         .stat-box {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 4px;
             background: #fff;
-            padding: 3px 2px;
-            border-radius: 5px;
-            border: 1px solid #eef0f2;
+            padding: 1px 2px;
+            border-radius: 3px;
+            border: 1px solid #edf2f7;
         }
 
         .stat-lbl {
             font-size: 8px;
             font-weight: 800;
-            color: #7f8c8d;
+            color: #a0aec0;
             text-transform: uppercase;
-            line-height: 1;
         }
 
         .stat-val {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             color: var(--dark-text);
-            margin-top: 1px;
-            line-height: 1.2;
         }
 
         .stat-val.profit-plus { color: #10b981; }
@@ -264,7 +271,7 @@
         </div>
         <div class="card">
             <span class="label">Binomo Before ($)</span>
-            <input type="number" id="binomo_before" placeholder="0">
+            <input type="number" id="binomo_before" placeholder="0" oninput="calculate()">
         </div>
         <div class="card">
             <span class="label">Binomo Now Capital ($)</span>
@@ -282,15 +289,18 @@
 
 <div id="historyPage">
     <div class="hist-header">
-        <button onclick="closeHistory()" style="background:none; border:none; font-size: 24px; color: var(--gold-dark); cursor:pointer;">←</button>
-        <h2 style="margin:0; font-size: 18px; color: var(--gold-dark);">Trade History</h2>
+        <button onclick="closeHistory()" style="background:none; border:none; font-size: 22px; color: var(--gold-dark); cursor:pointer;">←</button>
+        <h2 style="margin:0; font-size: 16px; color: var(--gold-dark);">Trade History</h2>
     </div>
 
     <div class="batch-actions">
-        <label style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:14px;">
+        <label style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:13px;">
             <input type="checkbox" id="selectAll" onclick="toggleSelectAll()"> All
         </label>
-        <button onclick="deleteSelected()" style="background:var(--danger); color:white; border:none; padding:6px 12px; border-radius:8px; font-weight:700; cursor:pointer;">Delete</button>
+        
+        <div id="totalBenefitBadge" class="total-benefit-badge">Total Profit: $0.00</div>
+
+        <button onclick="deleteSelected()" style="background:var(--danger); color:white; border:none; padding:4px 10px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;">Delete</button>
     </div>
 
     <div class="hist-list" id="histList"></div>
@@ -301,18 +311,12 @@
 <script>
     window.onload = function() {
         const savedData = JSON.parse(localStorage.getItem('lifetimeInputs'));
-        const history = JSON.parse(localStorage.getItem('goldHistory') || '[]');
 
         if (savedData) {
             document.getElementById('rate').value = savedData.r;
             document.getElementById('upi').value = savedData.u;
+            document.getElementById('binomo_before').value = savedData.b;
             document.getElementById('binomo_now').value = savedData.n;
-            
-            if (history.length > 0) {
-                document.getElementById('binomo_before').value = history[0].now;
-            } else {
-                document.getElementById('binomo_before').value = savedData.b;
-            }
             calculate();
         }
     };
@@ -342,31 +346,31 @@
     function saveData() {
         let history = JSON.parse(localStorage.getItem('goldHistory') || '[]');
         
-        let b;
+        const currentNow = parseFloat(document.getElementById('binomo_now').value) || 0;
+        let effectiveBefore = 0;
+
         if (history.length > 0) {
-            b = parseFloat(history[0].now);
+            effectiveBefore = parseFloat(history[0].now) || 0;
         } else {
-            b = parseFloat(document.getElementById('binomo_before').value) || 0;
+            effectiveBefore = parseFloat(document.getElementById('binomo_before').value) || 0;
         }
 
-        const n = parseFloat(document.getElementById('binomo_now').value) || 0;
-        const profit = (n - b).toFixed(2);
+        const profit = (currentNow - effectiveBefore).toFixed(2);
 
-        if (history.length > 0 && history[0].now === n.toFixed(2) && history[0].before === b.toFixed(2)) {
+        if (history.length > 0 && history[0].now === currentNow.toFixed(2) && history[0].before === effectiveBefore.toFixed(2)) {
             showToast("Already Saved! ⚠️", "#e67e22");
             return;
         }
 
         history.unshift({ 
             time: new Date().toLocaleString(), 
-            now: n.toFixed(2),
-            before: b.toFixed(2),
+            now: currentNow.toFixed(2),
+            before: effectiveBefore.toFixed(2),
             profit: profit 
         });
         
         localStorage.setItem('goldHistory', JSON.stringify(history));
         
-        document.getElementById('binomo_before').value = n.toFixed(2);
         calculate();
 
         showToast("Record Saved! ✅", "#2d3436");
@@ -388,10 +392,15 @@
         const container = document.getElementById('histList');
         container.innerHTML = history.length ? '' : '<p style="text-align:center;color:#999;margin-top:20px;">No History Found</p>';
 
+        let totalBenefit = 0;
+
         history.forEach((item, index) => {
             const nowVal = item.now !== undefined ? item.now : '0.00';
             const beforeVal = item.before !== undefined ? item.before : '0.00';
-            const pVal = parseFloat(item.profit);
+            const pVal = parseFloat(item.profit) || 0;
+            
+            totalBenefit += pVal;
+
             const profitSign = pVal >= 0 ? '+' : '';
             const profitClass = pVal >= 0 ? 'profit-plus' : 'profit-minus';
 
@@ -403,20 +412,27 @@
                     </div>
                     <div class="stats-grid">
                         <div class="stat-box">
-                            <span class="stat-lbl">Before</span>
+                            <span class="stat-lbl">BEFORE</span>
                             <span class="stat-val">$${beforeVal}</span>
                         </div>
                         <div class="stat-box">
-                            <span class="stat-lbl">Now</span>
+                            <span class="stat-lbl">NOW</span>
                             <span class="stat-val">$${nowVal}</span>
                         </div>
                         <div class="stat-box">
-                            <span class="stat-lbl">Profit</span>
+                            <span class="stat-lbl">PROFIT</span>
                             <span class="stat-val ${profitClass}">${profitSign}$${item.profit}</span>
                         </div>
                     </div>
                 </div>`;
         });
+
+        const totalBadge = document.getElementById('totalBenefitBadge');
+        const sign = totalBenefit >= 0 ? '+' : '';
+        totalBadge.innerText = `Total Profit: ${sign}$${totalBenefit.toFixed(2)}`;
+        totalBadge.style.color = totalBenefit >= 0 ? '#10b981' : '#ef4444';
+        totalBadge.style.background = totalBenefit >= 0 ? '#e6f4ea' : '#fde8e8';
+        totalBadge.style.borderColor = totalBenefit >= 0 ? '#a8e6cf' : '#f8b4b4';
     }
 
     function toggleSelectAll() {
