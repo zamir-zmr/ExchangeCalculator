@@ -63,44 +63,64 @@
         /* INPUT CARDS */
         .input-section { padding: 5px; }
 
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 5px;
+            padding: 0 5px;
+        }
+
         .card {
             background: white;
             border: 1px solid #eee;
-            border-bottom: 7px solid var(--gold-main);
-            border-left: 7px solid var(--gold-main);
+            border-bottom: 5px solid var(--gold-main);
+            border-left: 5px solid var(--gold-main);
             border-top: 2px solid var(--gold-main);
             border-right: 1px solid var(--gold-main);
-            border-radius: 18px;
-            padding: 5px;
-            margin-left: 5px;
-            margin-right: 5px;
-            margin-bottom: 5px;
+            border-radius: 12px;
+            padding: 6px;
             box-shadow: 0 4px 15px rgba(191, 149, 63, 0.1);
         }
 
+        .card.full-width {
+            margin: 0 5px 5px 5px;
+            border-bottom: 7px solid var(--gold-main);
+            border-left: 7px solid var(--gold-main);
+            border-radius: 18px;
+        }
+
         .label { 
-            font-size: 10px; 
+            font-size: 9px; 
             font-weight: 800; 
             color: var(--gold-dark); 
             text-transform: uppercase; 
-            margin-bottom: 5px; 
+            margin-bottom: 3px; 
             display: block; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         input { 
             width: 100%; 
             border: none; 
-            font-size: 22px; 
+            font-size: 18px; 
             font-weight: 800; 
             outline: none; 
             color: var(--dark-text);
+            box-sizing: border-box;
+        }
+
+        .card.full-width input {
+            font-size: 22px;
         }
 
         /* RESULT AREA */
         .result-panel {
             background: linear-gradient(135deg, #2ecc71, #27ae60);
-            margin: 20px;
-            padding: 5px;
+            margin: 15px 10px;
+            padding: 10px;
             border-radius: 20px;
             color: white;
             text-align: center;
@@ -109,8 +129,8 @@
         }
 
         .save-btn {
-            width: calc(100% - 40px);
-            margin: 0 20px 20px 20px;
+            width: calc(100% - 20px);
+            margin: 0 10px 20px 10px;
             padding: 18px;
             background: linear-gradient(to right, var(--gold-dark), var(--gold-main));
             color: white;
@@ -166,7 +186,6 @@
 
         .hist-list { flex: 1; padding: 6px; overflow-y: auto; }
         
-        /* EXTRA COMPACT HISTORY CARD */
         .hist-item {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -256,25 +275,50 @@
     </div>
 
     <div class="header">
-        <h1 style="color: #000; font-weight: 700; font-size: 30px;">Golden Dashboard</h1>
-        <p style="color: #000; font-weight: 700; font-size: 12px;">$ To ₹ Conversion</p>
+        <h1 style="color: #000; font-weight: 700; font-size: 30px; margin: 5px 0;">Golden Dashboard</h1>
+        <p style="color: #000; font-weight: 700; font-size: 12px; margin: 0 0 10px 0;">Currency Conversion & Settlement</p>
     </div>
 
     <div class="input-section">
-        <div class="card">
-            <span class="label">Market Rate (₹)</span>
-            <input type="number" id="rate" value="94.05" oninput="calculate()">
+        <!-- Rates Row (Top 3 Boxes) -->
+        <div class="grid-container">
+            <div class="card">
+                <span class="label">RATE (₹)</span>
+                <input type="number" id="rate_inr" value="1" oninput="calculate()">
+            </div>
+            <div class="card">
+                <span class="label">RATE ($)</span>
+                <input type="number" id="rate_usd" value="94" oninput="calculate()">
+            </div>
+            <div class="card">
+                <span class="label">RATE (OMR)</span>
+                <input type="number" id="rate_omr" value="248" oninput="calculate()">
+            </div>
         </div>
-        <div class="card">
-            <span class="label">UPI Amount (₹)</span>
-            <input type="number" id="upi" placeholder="0" oninput="calculate()">
+
+        <!-- Balances Row (Bottom 3 Boxes) -->
+        <div class="grid-container">
+            <div class="card">
+                <span class="label">BAL (₹)</span>
+                <input type="number" id="bal_inr" placeholder="0" oninput="calculate()">
+            </div>
+            <div class="card">
+                <span class="label">BAL ($)</span>
+                <input type="number" id="bal_usd" placeholder="0" oninput="calculate()">
+            </div>
+            <div class="card">
+                <span class="label">BAL (OMR)</span>
+                <input type="number" id="bal_omr" placeholder="0" oninput="calculate()">
+            </div>
         </div>
-        <div class="card">
-            <span class="label">Binomo Before ($)</span>
+
+        <!-- Binomo Before & Now Capital Fields -->
+        <div class="card full-width">
+            <span class="label">BINOMO BEFORE ($)</span>
             <input type="number" id="binomo_before" placeholder="0" oninput="calculate()">
         </div>
-        <div class="card">
-            <span class="label">Binomo Now Capital ($)</span>
+        <div class="card full-width">
+            <span class="label">BINOMO NOW CAPITAL ($)</span>
             <input type="number" id="binomo_now" placeholder="0" oninput="calculate()">
         </div>
     </div>
@@ -313,10 +357,14 @@
         const savedData = JSON.parse(localStorage.getItem('lifetimeInputs'));
 
         if (savedData) {
-            document.getElementById('rate').value = savedData.r;
-            document.getElementById('upi').value = savedData.u;
-            document.getElementById('binomo_before').value = savedData.b;
-            document.getElementById('binomo_now').value = savedData.n;
+            document.getElementById('rate_inr').value = savedData.r_inr !== undefined ? savedData.r_inr : 1;
+            document.getElementById('rate_usd').value = savedData.r_usd !== undefined ? savedData.r_usd : 94;
+            document.getElementById('rate_omr').value = savedData.r_omr !== undefined ? savedData.r_omr : 248;
+            document.getElementById('bal_inr').value = savedData.b_inr !== undefined ? savedData.b_inr : '';
+            document.getElementById('bal_usd').value = savedData.b_usd !== undefined ? savedData.b_usd : '';
+            document.getElementById('bal_omr').value = savedData.b_omr !== undefined ? savedData.b_omr : '';
+            document.getElementById('binomo_before').value = savedData.b !== undefined ? savedData.b : '';
+            document.getElementById('binomo_now').value = savedData.n !== undefined ? savedData.n : '';
             calculate();
         }
     };
@@ -332,14 +380,27 @@
     }
 
     function calculate() {
-        const r = parseFloat(document.getElementById('rate').value) || 0;
-        const u = parseFloat(document.getElementById('upi').value) || 0;
-        const n = parseFloat(document.getElementById('binomo_now').value) || 0;
-        const b = parseFloat(document.getElementById('binomo_before').value) || 0;
-        const total = u + (n * r);
+        const r_inr = parseFloat(document.getElementById('rate_inr').value) || 0;
+        const r_usd = parseFloat(document.getElementById('rate_usd').value) || 0;
+        const r_omr = parseFloat(document.getElementById('rate_omr').value) || 0;
+
+        const b_inr = parseFloat(document.getElementById('bal_inr').value) || 0;
+        const b_usd = parseFloat(document.getElementById('bal_usd').value) || 0;
+        const b_omr = parseFloat(document.getElementById('bal_omr').value) || 0;
+
+        const total = (b_inr * r_inr) + (b_usd * r_usd) + (b_omr * r_omr);
         document.getElementById('result').innerText = "₹ " + total.toLocaleString('en-IN', {minimumFractionDigits: 2});
 
-        const inputs = { r: r, u: u, n: n, b: b };
+        const inputs = {
+            r_inr: document.getElementById('rate_inr').value,
+            r_usd: document.getElementById('rate_usd').value,
+            r_omr: document.getElementById('rate_omr').value,
+            b_inr: document.getElementById('bal_inr').value,
+            b_usd: document.getElementById('bal_usd').value,
+            b_omr: document.getElementById('bal_omr').value,
+            n: document.getElementById('binomo_now').value,
+            b: document.getElementById('binomo_before').value
+        };
         localStorage.setItem('lifetimeInputs', JSON.stringify(inputs));
     }
 
