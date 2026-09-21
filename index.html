@@ -387,8 +387,9 @@
         const b_inr = parseFloat(document.getElementById('bal_inr').value) || 0;
         const b_usd = parseFloat(document.getElementById('bal_usd').value) || 0;
         const b_omr = parseFloat(document.getElementById('bal_omr').value) || 0;
+        const b_now = parseFloat(document.getElementById('binomo_now').value) || 0;
 
-        const total = (b_inr * r_inr) + (b_usd * r_usd) + (b_omr * r_omr);
+        const total = (b_inr * r_inr) + (b_usd * r_usd) + (b_omr * r_omr) + (b_now * r_usd);
         document.getElementById('result').innerText = "₹ " + total.toLocaleString('en-IN', {minimumFractionDigits: 2});
 
         const inputs = {
